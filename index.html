@@ -9,25 +9,25 @@
     <style>
         body { background-color: #0000FF; color: #FFFFFF; font-family: sans-serif; overflow: hidden; }
         .main-box { border: 2px solid #FFFFFF; background: rgba(0, 0, 0, 0.3); padding: 20px; border-radius: 15px; }
-        .btn-yes { background-color: #22c55e; color: white; padding: 12px 20px; border-radius: 8px; width: 45%; font-weight: bold; }
-        .btn-no { background-color: #ef4444; color: white; padding: 12px 20px; border-radius: 8px; width: 45%; font-weight: bold; position: relative; }
+        .btn-yes { background-color: #22c55e; color: white; padding: 15px 0; border-radius: 8px; width: 45%; font-weight: bold; }
+        .btn-no { background-color: #ef4444; color: white; padding: 15px 0; border-radius: 8px; width: 45%; font-weight: bold; position: relative; transition: 0.2s; }
     </style>
 </head>
 <body class="flex items-center justify-center h-screen">
 
     <div id="app" class="w-[90%] main-box text-center">
-        <!-- Adım 1 -->
+        <!-- Adım 1: İsim -->
         <div id="step1">
             <h1 class="text-2xl mb-4 font-bold">Adınız Nedir?</h1>
             <input id="userName" type="text" class="w-full p-3 bg-white text-black rounded-lg mb-4 outline-none" placeholder="İsminizi yazın...">
             <button onclick="startApp()" class="w-full bg-white text-blue-700 py-3 rounded-lg font-bold">Tamam</button>
         </div>
 
-        <!-- Adım 2 -->
+        <!-- Adım 2: Soru Akışı -->
         <div id="step2" class="hidden">
             <p id="msg" class="text-xl mb-6 font-bold"></p>
             <div id="btns" class="flex justify-between">
-                <button id="btnYes" onclick="stepTwo()" class="btn-yes">Evet</button>
+                <button id="btnYes" onclick="handleYes()" class="btn-yes">Evet</button>
                 <button id="btnNo" onmouseover="moveNo()" onclick="moveNo()" class="btn-no">Hayır</button>
             </div>
         </div>
@@ -35,7 +35,7 @@
 
     <script>
         let name = "";
-        let stage = 0;
+        let stage = 0; // 0: "Sana soru soracağım", 1: "Tatil sorusu"
         const synth = window.speechSynthesis;
 
         function speak(text) {
@@ -48,25 +48,27 @@
 
         function startApp() {
             name = document.getElementById('userName').value;
-            if(!name) return alert("İsim lazım kanka!");
+            if(!name) return alert("İsmini yaz kanka!");
             
             document.getElementById('step1').classList.add('hidden');
             document.getElementById('step2').classList.remove('hidden');
             
-            document.getElementById('msg').innerText = "Selam Ben Ali ! Bu siteyi Bir izin Almak için açtım. Tamam'a bas.";
-            speak("Selam Ben Ali. Bu siteyi bir izin almak için açtım.");
+            document.getElementById('msg').innerText = "Selam " + name + ", sana bir soru soracağım.";
+            speak("Selam " + name + ", sana bir soru soracağım.");
         }
 
-        function stepTwo() {
+        function handleYes() {
             if(stage === 0) {
+                // İkinci soruya geç
                 document.getElementById('msg').innerText = "Selam " + name + ". Ben Ali. Sana bir soru sormak istiyorum. Ben, Ablam, Halam ve Kuzenim tatile gidebilir miyiz?";
                 speak("Selam " + name + ". Ben Ali. Sana bir soru sormak istiyorum. Ben, ablam, halam ve kuzenim tatile gidebilir miyiz?");
                 stage = 1;
-            } else {
+            } else if(stage === 1) {
+                // Final
                 document.getElementById('msg').innerText = "YUPPI BILIYORDUM TEŞEKKÜRŞER !";
                 document.getElementById('btns').classList.add('hidden');
                 confetti();
-                speak("Yuppi biliyordum teşekkürler.");
+                speak("Yuppi biliyordum, teşekkürler " + name);
             }
         }
 
