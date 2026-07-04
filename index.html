@@ -3,79 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ali'nin Özel Mesajı</title>
+    <title>THE LX</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
-        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
-        .glass { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.3); }
-        .fade-in { animation: fadeIn 0.8s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        body { background-color: #000; color: #fff; font-family: sans-serif; overflow: hidden; }
+        .neon-box { border: 2px solid #fff; box-shadow: 0 0 15px #fff; background: #000; border-radius: 0px; }
+        .btn-neon { border: 2px solid #fff; transition: 0.3s; padding: 12px; width: 45%; }
+        .btn-neon:hover { background: #fff; color: #000; }
     </style>
 </head>
-<body class="flex items-center justify-center p-4 text-white text-center">
+<body class="flex items-center justify-center h-screen">
 
-    <div id="app" class="w-full max-w-sm p-6 glass shadow-2xl">
+    <div id="app" class="w-[90%] p-6 neon-box text-center">
+        <!-- Adım 1 -->
         <div id="step1">
-            <h1 class="text-2xl font-bold mb-4">Adınız Nedir?</h1>
-            <input id="userName" type="text" class="w-full p-3 rounded-full text-black mb-4 outline-none" placeholder="İsminizi girin...">
-            <button onclick="startProcess()" class="bg-green-500 w-full py-3 rounded-full font-bold hover:bg-green-600 transition">Tamam</button>
+            <h1 class="text-xl mb-4 font-bold">Adınız Nedir?</h1>
+            <input id="userName" type="text" class="w-full p-2 bg-black border border-white text-white mb-4 outline-none" placeholder="İsminiz...">
+            <button onclick="goToNext()" class="w-full btn-neon">Tamam</button>
         </div>
 
+        <!-- Adım 2 -->
         <div id="step2" class="hidden">
-            <p class="text-xl" id="loadingText"></p>
-        </div>
-
-        <div id="step3" class="hidden">
-            <p id="mainMessage" class="text-lg mb-6"></p>
-            <div id="actionButtons" class="flex flex-col gap-4">
-                <button id="btnYes" onclick="sayYes()" class="bg-green-500 py-3 rounded-full font-bold">Evet</button>
-                <button id="btnNo" onmouseover="moveNo()" onclick="moveNo()" class="bg-red-500 py-3 rounded-full font-bold absolute">Hayır</button>
+            <p id="msg" class="text-lg mb-6"></p>
+            <div id="btns" class="flex justify-between">
+                <button id="btnYes" onclick="sayYes()" class="btn-neon">Evet</button>
+                <button id="btnNo" onmouseover="moveNo()" onclick="moveNo()" class="btn-neon">Hayır</button>
             </div>
         </div>
     </div>
 
     <script>
         let name = "";
+        let step = 1;
         const synth = window.speechSynthesis;
 
         function speak(text) {
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'tr-TR';
-            utterance.pitch = 0.8; // Erkek sesi tonu için
+            utterance.pitch = 0.8;
+            utterance.volume = 1.0; // Maksimum ses
             synth.speak(utterance);
         }
 
-        function startProcess() {
+        function goToNext() {
             name = document.getElementById('userName').value;
-            if(!name) return alert("Lütfen adınızı girin!");
-            
+            if(!name) return;
             document.getElementById('step1').classList.add('hidden');
             document.getElementById('step2').classList.remove('hidden');
-            document.getElementById('loadingText').innerText = `${name}, Ali'nin sitesine yönlendiriliyorsunuz...`;
-            
-            setTimeout(() => {
-                document.getElementById('step2').classList.add('hidden');
-                document.getElementById('step3').classList.remove('hidden');
-                document.getElementById('mainMessage').innerText = "Selam Ben Ali ! Bu siteyi Bir izin Almak için açtım";
-                speak("Selam, ben Ali. Bu siteyi bir izin almak için açtım.");
-            }, 3000);
+            document.getElementById('msg').innerText = "Selam " + name + ", sana bir soru soracağım!";
+            speak("Selam " + name + ", sana bir soru soracağım.");
         }
 
         function moveNo() {
             const btn = document.getElementById('btnNo');
             btn.style.position = 'fixed';
-            btn.style.top = Math.random() * 80 + '%';
-            btn.style.left = Math.random() * 80 + '%';
+            btn.style.top = (Math.random() * 70 + 10) + '%';
+            btn.style.left = (Math.random() * 70 + 10) + '%';
         }
 
         function sayYes() {
-            document.getElementById('mainMessage').innerText = `YUPPI BILIYORDUM TEŞEKKÜRLER ${name.toUpperCase()} !`;
-            document.getElementById('actionButtons').classList.add('hidden');
-            confetti();
-            speak(`Yuppi, biliyordum! Teşekkürler ${name}.`);
+            if(step === 1) {
+                document.getElementById('msg').innerText = "Selam " + name + ". Ben Ali. Ablam, Halam ve Kuzenimle tatile gidebilir miyiz?";
+                speak("Selam " + name + ". Ben Ali. Ablam, Halam ve Kuzenimle tatile gidebilir miyiz?");
+                step = 2;
+            } else {
+                document.getElementById('msg').innerText = "YUPPI BILIYORDUM TEŞEKKÜRLER !";
+                document.getElementById('btns').classList.add('hidden');
+                confetti();
+                speak("Yuppi, biliyordum! Teşekkürler " + name);
+            }
         }
     </script>
 </body>
 </html>
-
